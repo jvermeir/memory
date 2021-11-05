@@ -72,9 +72,7 @@ c(10)
 
 ```
 {
-    function throwIt() {
-        throw 'error';
-    }
+    function throwIt() { throw 'error'; }
     try {
         throwIt();
         console.log(`error: ${error} -- no catch`);
@@ -88,11 +86,9 @@ c(10)
 
 ```
 {
-    function passed() {## I'm passed");}
-    function passedToo() {## I'm passedToo");}
-    function caller(f) {
-        f();
-    }
+    function passed() {"I'm passed");}
+    function passedToo() {"I'm passedToo");}
+    function caller(f) { f(); }
     caller(passed);
     caller(passedToo);
 }
