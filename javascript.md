@@ -13,6 +13,9 @@
 ```
 {
     const is = Array.from({length: 10}, (_, i) => i);
-    is.map(i => i * 3).filter(i => i % 2 !== 0).forEach(i => console.log(i));
+    is
+    .map(i => i * 3)
+    .filter(i => i % 2 !== 0)
+    .forEach(i => console.log(i));
 }
 ```
