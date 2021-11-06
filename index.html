@@ -18,47 +18,60 @@
   </head>
 
   <body>
-    <div id="mdcontent">temp</div>
+    <select id="cards" onchange="loadFile(this.value)">
+      <option>loading...</option>
+    </select>
 
+    <div id="cardContent">loading...</div>
+    
     <script>
-  //     curl \
-  // -H "Accept: application/vnd.github.v3+json" \
-  // https://api.github.com/repos/jvermeir/memory/git/trees/bf17962
+
+      getListOfCards();
 
       async function getListOfCards() {
-        const response = await fetch("https://api.github.com/repos/jvermeir/memory/git/trees/bf17962");
+        const response = await fetch("https://api.github.com/repos/jvermeir/memory/contents/cards");
         const data = await response.text();
-        
+        const cards = JSON.parse(data).map( c => c.download_url);
+        const selector = document.getElementById("cards");
+        [...selector.options].forEach(option => selector.remove(option));
+        selector.add(new Option("select a card", "select a card"));
+        cards.forEach(card => {
+          selector.add(new Option(getCardNameFromUrl(card), card));
+        });        
       }
 
-      async function loadFile() {
-        const response = await fetch(
-          "https://raw.githubusercontent.com/jvermeir/memory/main/cards/javascript.md"
-        );
-        const data = await response.text();
-        show(data);
+      function getCardNameFromUrl(element) {
+        const fileName = element.split("/").slice(-1)[0];
+        const fileNameWithoutExtension = fileName.split(".")[0];
+        return fileNameWithoutExtension
       }
 
-      loadFile();
+      async function loadFile(url) {
+        const response = await fetch( url );
+        const cardAsMarkdown = await response.text();
+        showCards(cardAsMarkdown);
+      }  
 
-      function show(markdownText) {
-        htmlText = parseCards(markdownText);
-        document.getElementById("mdcontent").innerHTML = htmlText;
+      function showCards(cardAsMarkdown) {
+        htmlText = parseCards(cardAsMarkdown);
+        document.getElementById("cardContent").innerHTML = htmlText;
       }
 
-      const template = `            <section>
-                <div class="card">
-                  <div class="card__side card__side--front">
-                    <div class="card__details"><title/></div>
-                  </div>
-                  <div class="card__side card__side--back">
-                    <pre>
-<snippet/>
-                    </pre>
-                  </div>
-                </div>
-              </section>
-`;
+      const template = 
+      `
+        <section>
+          <div class="card">
+            <div class="card__side card__side--front">
+              <div class="card__details"><title/></div>
+            </div>
+            <div class="card__side card__side--back">
+              <pre>
+                <snippet/>
+              </pre>
+            </div>
+          </div>
+        </section>
+      `;
 
       function printCard(title, snippet) {
         return template
